@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { X, Volume2, Bell, Monitor, Clock, FileAudio } from 'lucide-react';
-import { Settings } from '../types';
+import { Settings } from '../types.ts';
 
 interface SettingsModalProps {
   settings: Settings;
@@ -36,9 +36,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ settings, onSave, onClose
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-xl">
       <div className="w-full max-w-lg bg-[#111] border border-white/10 rounded-3xl overflow-hidden flex flex-col shadow-2xl">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-white/5">
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
@@ -49,10 +48,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ settings, onSave, onClose
           </button>
         </div>
 
-        {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          
-          {/* Ambience Sound Section */}
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -89,7 +85,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ settings, onSave, onClose
             )}
           </section>
 
-          {/* Interval Sound Section */}
           <section className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -138,7 +133,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ settings, onSave, onClose
             )}
           </section>
 
-          {/* Screen Keep On */}
           <section className="pt-4 border-t border-white/5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -163,7 +157,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ settings, onSave, onClose
           </section>
         </div>
 
-        {/* Footer */}
         <div className="p-6 bg-[#0a0a0a] border-t border-white/5">
           <button 
             onClick={onClose}

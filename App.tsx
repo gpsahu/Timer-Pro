@@ -1,9 +1,9 @@
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Settings as SettingsIcon, X, Play, Pause, RotateCcw, Volume2, Bell, Clock, Monitor, Maximize2 } from 'lucide-react';
-import { TimerStatus, Settings, TimeState } from './types';
-import TimerDisplay from './components/TimerDisplay';
-import SettingsModal from './components/SettingsModal';
+import React, { useState, useEffect, useRef } from 'react';
+import { Settings as SettingsIcon, Play, Pause, RotateCcw, Maximize2 } from 'lucide-react';
+import { TimerStatus, Settings } from './types.ts';
+import TimerDisplay from './components/TimerDisplay.tsx';
+import SettingsModal from './components/SettingsModal.tsx';
 
 const DEFAULT_SETTINGS: Settings = {
   ambience: {
@@ -31,7 +31,6 @@ export default function App() {
   const intervalAudioRef = useRef<HTMLAudioElement | null>(null);
   const wakeLockRef = useRef<any>(null);
 
-  // Handle hardware back button (via Escape key simulation in wrappers)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && showSettings) {
@@ -120,7 +119,7 @@ export default function App() {
       }, 1000);
     }
     return () => clearInterval(timer);
-  }, [status, settings.interval, initialTime]);
+  }, [status, settings.interval, initialTime, timeLeft]);
 
   const handleStart = () => {
     setStatus(TimerStatus.RUNNING);
@@ -137,7 +136,6 @@ export default function App() {
 
   return (
     <div className="relative w-screen h-screen bg-[#0a0a0a] overflow-hidden flex flex-col items-center justify-center select-none touch-none pb-[env(safe-area-inset-bottom)] pt-[env(safe-area-inset-top)] px-[env(safe-area-inset-left)]">
-      {/* Settings & Fullscreen Toggle */}
       <div className={`absolute top-[calc(1rem+env(safe-area-inset-top))] right-[calc(1rem+env(safe-area-inset-right))] z-50 flex gap-3 transition-all duration-500 ${status === TimerStatus.RUNNING ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <button 
           onClick={toggleFullscreen}
