@@ -8,11 +8,13 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>Timer Pro</title>
+    <title>ZenTimer Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <!-- Babel Standalone for on-the-fly TSX/JSX transpilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         :root {
             --safe-area-inset-top: env(safe-area-inset-top);
@@ -31,16 +33,6 @@
         }
         .timer-font {
             font-family: 'JetBrains Mono', monospace;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 10px;
         }
         #root {
             height: 100vh;
@@ -68,6 +60,25 @@
 </head>
 <body>
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
+    <!-- 
+        Using type="text/babel" with data-type="module" allows Babel to 
+        fetch your .tsx files as text and transpile them in the browser. 
+        This is necessary for GitHub Pages because it serves .tsx as text/plain.
+    -->
+    <script type="text/babel" data-type="module" data-presets="typescript,react">
+        import React from 'react';
+        import ReactDOM from 'react-dom/client';
+        import App from './App.tsx';
+
+        const rootElement = document.getElementById('root');
+        if (rootElement) {
+            const root = ReactDOM.createRoot(rootElement);
+            root.render(
+                <React.StrictMode>
+                    <App />
+                </React.StrictMode>
+            );
+        }
+    </script>
 </body>
 </html>
