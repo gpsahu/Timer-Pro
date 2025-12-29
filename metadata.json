@@ -1,0 +1,5 @@
+{
+  "name": "Timer Pro",
+  "description": "A minimalist full-screen digital countdown timer with ambient soundscapes and customizable interval alerts.",
+  "requestFramePermissions": []
+}
