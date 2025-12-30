@@ -13,12 +13,6 @@ export interface SoundConfig {
 
 export interface Settings {
   ambience: SoundConfig;
-  interval: SoundConfig & { period: number }; // period in seconds
+  interval: SoundConfig & { period: number };
   keepScreenOn: boolean;
-}
-
-export interface TimeState {
-  hours: number;
-  minutes: number;
-  seconds: number;
 }

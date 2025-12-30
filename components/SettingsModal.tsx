@@ -1,173 +1,113 @@
 
 import React from 'react';
-import { X, Volume2, Bell, Monitor, Clock, FileAudio } from 'lucide-react';
+import { X, Volume2, Bell, Monitor, FileAudio, Trash2 } from 'lucide-react';
 import { Settings } from '../types.ts';
 
 interface SettingsModalProps {
   settings: Settings;
-  onSave: (settings: Settings) => void;
+  onSave: (s: Settings) => void;
   onClose: () => void;
 }
 
 const SettingsModal: React.FC<SettingsModalProps> = ({ settings, onSave, onClose }) => {
-  const handleFileChange = (type: 'ambience' | 'interval', e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = (type: 'ambience' | 'interval', e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
       onSave({
         ...settings,
-        [type]: {
-          ...settings[type],
-          fileUrl: url,
-          fileName: file.name
-        }
+        [type]: { ...settings[type], fileUrl: URL.createObjectURL(file), fileName: file.name }
       });
     }
   };
 
-  const toggleEnabled = (type: 'ambience' | 'interval') => {
-    onSave({
-      ...settings,
-      [type]: {
-        ...settings[type],
-        enabled: !settings[type].enabled
-      }
-    });
-  };
-
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-black/80 backdrop-blur-xl">
-      <div className="w-full max-w-lg bg-[#111] border border-white/10 rounded-3xl overflow-hidden flex flex-col shadow-2xl">
-        <div className="flex items-center justify-between p-6 border-b border-white/5">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-            Settings
-          </h2>
-          <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full transition-colors">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
+      <div className="w-full max-w-lg bg-[#111] border border-white/10 rounded-[2.5rem] shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between p-8 border-b border-white/5">
+          <h2 className="text-2xl font-bold">Preferences</h2>
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
             <X className="w-6 h-6 text-white/40" />
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
-          <section className="space-y-4">
+        <div className="p-8 space-y-10 max-h-[70vh] overflow-y-auto">
+          {/* Ambience */}
+          <section className="space-y-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-indigo-500/10 rounded-lg">
-                  <Volume2 className="w-5 h-5 text-indigo-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-white/90">Ambience Sound</h3>
-                  <p className="text-xs text-white/40">Plays continuously while running</p>
-                </div>
+              <div className="flex gap-4">
+                <div className="p-3 bg-blue-500/10 rounded-2xl"><Volume2 className="text-blue-400" /></div>
+                <div><h3 className="font-semibold">Ambience</h3><p className="text-xs text-white/30">Looping background audio</p></div>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={settings.ambience.enabled} 
-                  onChange={() => toggleEnabled('ambience')}
-                  className="sr-only peer" 
-                />
-                <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
-              </label>
+              <Switch checked={settings.ambience.enabled} onChange={() => onSave({...settings, ambience: {...settings.ambience, enabled: !settings.ambience.enabled}})} />
             </div>
-
             {settings.ambience.enabled && (
-              <div className="pl-12 space-y-3">
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <FileAudio className="w-4 h-4" />
-                  <span className="truncate max-w-[200px]">{settings.ambience.fileName || 'No file selected'}</span>
-                </div>
-                <label className="inline-block px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-medium cursor-pointer transition-colors">
-                  Choose Media
-                  <input type="file" accept="audio/*" onChange={(e) => handleFileChange('ambience', e)} className="hidden" />
-                </label>
+              <div className="pl-14">
+                <FilePicker name={settings.ambience.fileName} onUpload={(e) => handleUpload('ambience', e)} onClear={() => onSave({...settings, ambience: {...settings.ambience, fileUrl: null, fileName: null}})} />
               </div>
             )}
           </section>
 
-          <section className="space-y-4">
+          {/* Interval */}
+          <section className="space-y-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-emerald-500/10 rounded-lg">
-                  <Bell className="w-5 h-5 text-emerald-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-white/90">Interval Alerts</h3>
-                  <p className="text-xs text-white/40">Trigger sound every X period</p>
-                </div>
+              <div className="flex gap-4">
+                <div className="p-3 bg-emerald-500/10 rounded-2xl"><Bell className="text-emerald-400" /></div>
+                <div><h3 className="font-semibold">Interval Alerts</h3><p className="text-xs text-white/30">Recurring chime during countdown</p></div>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={settings.interval.enabled} 
-                  onChange={() => toggleEnabled('interval')}
-                  className="sr-only peer" 
-                />
-                <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
-              </label>
+              <Switch checked={settings.interval.enabled} onChange={() => onSave({...settings, interval: {...settings.interval, enabled: !settings.interval.enabled}})} />
             </div>
-
             {settings.interval.enabled && (
-              <div className="pl-12 space-y-4">
-                <div className="flex items-center gap-2 text-sm text-white/60">
-                  <FileAudio className="w-4 h-4" />
-                  <span className="truncate max-w-[200px]">{settings.interval.fileName || 'No file selected'}</span>
-                </div>
-                <div className="flex gap-2 items-center">
-                  <label className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-medium cursor-pointer transition-colors">
-                    Choose Media
-                    <input type="file" accept="audio/*" onChange={(e) => handleFileChange('interval', e)} className="hidden" />
-                  </label>
-                  <div className="flex items-center bg-white/5 border border-white/10 rounded-xl px-3 py-1">
-                    <Clock className="w-3 h-3 text-white/40 mr-2" />
-                    <input 
-                      type="number" 
-                      value={settings.interval.period}
-                      onChange={(e) => onSave({...settings, interval: {...settings.interval, period: parseInt(e.target.value) || 0}})}
-                      className="bg-transparent text-sm w-12 text-white focus:outline-none"
-                    />
-                    <span className="text-[10px] text-white/40 ml-1 uppercase">sec</span>
-                  </div>
+              <div className="pl-14 space-y-4">
+                <FilePicker name={settings.interval.fileName} onUpload={(e) => handleUpload('interval', e)} onClear={() => onSave({...settings, interval: {...settings.interval, fileUrl: null, fileName: null}})} />
+                <div className="flex items-center gap-4 bg-white/5 p-4 rounded-2xl">
+                  <span className="text-xs text-white/30 uppercase tracking-widest font-bold">Every</span>
+                  <input type="number" value={settings.interval.period} onChange={(e) => onSave({...settings, interval: {...settings.interval, period: parseInt(e.target.value) || 0}})} className="bg-transparent border-b border-white/20 w-12 text-center outline-none" />
+                  <span className="text-xs text-white/30 uppercase tracking-widest font-bold">Seconds</span>
                 </div>
               </div>
             )}
           </section>
 
-          <section className="pt-4 border-t border-white/5">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-500/10 rounded-lg">
-                  <Monitor className="w-5 h-5 text-amber-400" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-white/90">Keep Screen On</h3>
-                  <p className="text-xs text-white/40">Prevent sleep during countdown</p>
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input 
-                  type="checkbox" 
-                  checked={settings.keepScreenOn} 
-                  onChange={() => onSave({...settings, keepScreenOn: !settings.keepScreenOn})}
-                  className="sr-only peer" 
-                />
-                <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
-              </label>
+          {/* Wake Lock */}
+          <section className="pt-6 border-t border-white/5 flex items-center justify-between">
+            <div className="flex gap-4">
+              <div className="p-3 bg-amber-500/10 rounded-2xl"><Monitor className="text-amber-400" /></div>
+              <div><h3 className="font-semibold">Stay Awake</h3><p className="text-xs text-white/30">Prevent screen timeout</p></div>
             </div>
+            <Switch checked={settings.keepScreenOn} onChange={() => onSave({...settings, keepScreenOn: !settings.keepScreenOn})} />
           </section>
         </div>
 
-        <div className="p-6 bg-[#0a0a0a] border-t border-white/5">
-          <button 
-            onClick={onClose}
-            className="w-full py-4 bg-white text-black rounded-2xl font-semibold hover:bg-white/90 transition-colors"
-          >
-            Apply Changes
+        <div className="p-8 bg-[#0d0d0d]">
+          <button onClick={onClose} className="w-full py-5 bg-white text-black rounded-[1.5rem] font-bold text-sm uppercase tracking-widest hover:bg-zinc-200 transition-all">
+            Save Preferences
           </button>
         </div>
       </div>
     </div>
   );
 };
+
+const Switch = ({ checked, onChange }: { checked: boolean, onChange: () => void }) => (
+  <button onClick={onChange} className={`relative w-14 h-7 rounded-full transition-colors ${checked ? 'bg-white' : 'bg-white/10'}`}>
+    <div className={`absolute top-1 left-1 w-5 h-5 rounded-full transition-all ${checked ? 'translate-x-7 bg-black' : 'translate-x-0 bg-white/40'}`} />
+  </button>
+);
+
+const FilePicker = ({ name, onUpload, onClear }: any) => (
+  <div className="flex items-center gap-2">
+    {!name ? (
+      <label className="flex-1 px-5 py-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-dashed border-white/10 text-xs font-medium cursor-pointer transition-all flex items-center justify-center gap-3">
+        <FileAudio className="w-4 h-4" /> Choose Audio File
+        <input type="file" accept="audio/*" onChange={onUpload} className="hidden" />
+      </label>
+    ) : (
+      <div className="flex-1 flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/5">
+        <span className="text-xs text-white/50 truncate max-w-[150px]">{name}</span>
+        <button onClick={onClear} className="text-white/20 hover:text-red-400 transition-colors"><Trash2 className="w-4 h-4" /></button>
+      </div>
+    )}
+  </div>
+);
 
 export default SettingsModal;

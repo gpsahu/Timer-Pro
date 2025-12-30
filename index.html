@@ -7,8 +7,7 @@
     <meta name="theme-color" content="#0a0a0a">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>ZenTimer Pro</title>
+    <title>Timer Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,35 +16,54 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         :root {
-            --safe-area-inset-top: env(safe-area-inset-top);
-            --safe-area-inset-bottom: env(safe-area-inset-bottom);
+            --safe-area-inset-top: env(safe-area-inset-top, 0px);
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
         }
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
             background-color: #0a0a0a;
             font-family: 'Inter', sans-serif;
             color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            -webkit-user-select: none;
         }
         .timer-font {
             font-family: 'JetBrains Mono', monospace;
         }
         #root {
-            height: 100vh;
-            height: -webkit-fill-available;
-        }
-        html, body {
-            position: fixed;
-            overflow: hidden;
-            width: 100%;
             height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .loading-screen {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            margin: 0 4px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
     </style>
-<script type="importmap">
+    <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@^19.2.3",
@@ -59,12 +77,12 @@
 </script>
 </head>
 <body>
+    <div id="loader" class="loading-screen">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+    </div>
     <div id="root"></div>
-    <!-- 
-        Using type="text/babel" with data-type="module" allows Babel to 
-        fetch your .tsx files as text and transpile them in the browser. 
-        This is necessary for GitHub Pages because it serves .tsx as text/plain.
-    -->
     <script type="text/babel" data-type="module" data-presets="typescript,react">
         import React from 'react';
         import ReactDOM from 'react-dom/client';
@@ -78,6 +96,12 @@
                     <App />
                 </React.StrictMode>
             );
+            // Hide loader once React starts
+            setTimeout(() => {
+                const loader = document.getElementById('loader');
+                if (loader) loader.style.opacity = '0';
+                setTimeout(() => loader?.remove(), 500);
+            }, 500);
         }
     </script>
 </body>
